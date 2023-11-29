@@ -325,6 +325,7 @@ public class SistemaADM {
     System.out.println("[NOVO FUNCIONARIO CADASTRADO COM SUCESSO!]");
     
     //DESERIALIZAÇÃO + APRESENTAR OS DADOS
+    /* 
     Statement xx = connection.createStatement();
     ResultSet rs = xx.executeQuery("select * from funcionario");
     
@@ -338,6 +339,7 @@ public class SistemaADM {
       System.out.println(cargo.getNome());
       
     }
+    */
     
     statement.close();
     connection.close();
@@ -559,7 +561,9 @@ public class SistemaADM {
   }
 
   //DELETAR FUNCIONARIO
-  public static void deletarFuncionario(){
+  public static void deletarFuncionario() throws SQLException{
+
+    //EXLUINDO FUNCIONARIO DA LISTA INTERNA
     System.out.println("[DIGITE O CPF(11 digitos) DO FUNCIONARIO QUE DESEJA DELETAR]");
     
     String cpfString;
@@ -588,6 +592,13 @@ public class SistemaADM {
     }
 
     listaFuncionarios.remove(funcionarioDemitido);
+
+
+    //EXCLUINDO FUNCIONARIO DO BANCO DE DADOS
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    Statement statement = connection.createStatement();
+    statement.executeUpdate("delete from funcionario where cpf = '" + cpfLong + "'");
+
     System.out.println("[FUNCIONARIO DEMITIDO COM SUCESSO!]");
   }
 
