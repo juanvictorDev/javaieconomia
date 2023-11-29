@@ -5,6 +5,7 @@ import funcionario.Cargo;
 public class OperadorCaixa implements Cargo{
   static double salario = 2100.00d;
   static String nome = "Operador de Caixa";
+  private static final long serialVersionUID = 6L;
   private String senhaCaixa;
 
   public OperadorCaixa(String senhaCaixa){

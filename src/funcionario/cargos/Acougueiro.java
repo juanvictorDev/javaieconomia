@@ -5,6 +5,7 @@ import funcionario.Cargo;
 public class Acougueiro implements Cargo{
   static double salario = 2324.59d;
   static String nome = "Acougueiro";
+  private static final long serialVersionUID = 1L;
 
   public String getNome() {
     return nome;

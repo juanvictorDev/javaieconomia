@@ -3,7 +3,7 @@ import funcionario.*;
 import produto.*;
 
 public class App {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     Estoque.iniciarEstoque();
     SistemaADM.iniciarFuncionarios();
 

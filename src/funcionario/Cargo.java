@@ -1,6 +1,7 @@
 package funcionario;
+import java.io.Serializable;
 
-public interface Cargo {
+public interface Cargo extends Serializable{
   String getNome();
   double getSalario();
   

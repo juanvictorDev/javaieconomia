@@ -4,13 +4,29 @@ import java.util.*;
 import funcionario.cargos.*;
 import geradorId.GeradorId;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.*;
+
 public class SistemaADM {
   //LISTA DE FUNCIONARIOS
   static ArrayList<Funcionario> listaFuncionarios = new ArrayList<>();
 
 
   //ADICIONAR FUNCIONARIO
-  public static void addFuncionario(){
+  public static void addFuncionario() throws Exception {
+
+    //CONEXAO COM O BANCO E STATEMENT 
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement statement = connection.prepareStatement("insert into funcionario values (?,?,?,?,?,?,?,?,?,?,?)");
+    
+    //INSTACIAR OBJETOS PARA SERIALIZACAO 
+    ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+    ObjectOutputStream objOutStream = new ObjectOutputStream(byteOutStream);
+
+    //FLUXO PADRAO DO METODO
     System.out.println("[DIGITE O CPF: 11 digitos]");
     String cpfString = System.console().readLine();
     long cpfLong;
@@ -94,44 +110,239 @@ public class SistemaADM {
 
     switch (cargoEscolhidoInt) {
       case 1:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new Acougueiro()));
+        
+        String id = GeradorId.gerarId();
+        Acougueiro cargo = new Acougueiro();
+      
+        objOutStream.writeObject(cargo);
+        byte[] objSerializado = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo));
+        
+        statement.setString(1, id);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado);
+
+        statement.executeUpdate();
+
         break;
     
       case 2:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new AuxiliarGeral()));
+        
+        String id2 = GeradorId.gerarId();
+        AuxiliarGeral cargo2 = new AuxiliarGeral();
+      
+        objOutStream.writeObject(cargo2);
+        byte[] objSerializado2 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id2, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo2));
+        
+        statement.setString(1, id2);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado2);
+
+        statement.executeUpdate();
+
         break;
     
       case 3:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new AuxiliarLimpeza()));
+
+        String id3 = GeradorId.gerarId();
+        AuxiliarLimpeza cargo3 = new AuxiliarLimpeza();
+      
+        objOutStream.writeObject(cargo3);
+        byte[] objSerializado3 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id3, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo3));
+        
+        statement.setString(1, id3);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado3);
+
+        statement.executeUpdate();
+        
         break;
     
       case 4:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new Estoquista()));
+
+        String id4 = GeradorId.gerarId();
+        Estoquista cargo4 = new Estoquista();
+      
+        objOutStream.writeObject(cargo4);
+        byte[] objSerializado4 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id4, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo4));
+        
+        statement.setString(1, id4);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado4);
+
+        statement.executeUpdate();
+
         break;
     
       case 5:
         System.out.println("[DIGITE A SENHA PARA O GERENTE ACESSAR O SISTEMA]");
         String senhaGerente = System.console().readLine();
+      
+        String id5 = GeradorId.gerarId();
+        Gerente cargo5 = new Gerente(senhaGerente);
+      
+        objOutStream.writeObject(cargo5);
+        byte[] objSerializado5 = byteOutStream.toByteArray();
 
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new Gerente(senhaGerente)));
+        listaFuncionarios.add(new Funcionario(id5, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo5));
+        
+        statement.setString(1, id5);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado5);
+
+        statement.executeUpdate();
+
         break;
+
       case 6:
         System.out.println("[DIGITE A SENHA PARA O OPERADOR DE CAIXA]");
         String senhaCaixa = System.console().readLine();      
         
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new OperadorCaixa(senhaCaixa)));
+        String id6 = GeradorId.gerarId();
+        OperadorCaixa cargo6 = new OperadorCaixa(senhaCaixa);
+      
+        objOutStream.writeObject(cargo6);
+        byte[] objSerializado6 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id6, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo6));
+        
+        statement.setString(1, id6);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado6);
+
+        statement.executeUpdate();
+        
         break;
     
       case 7:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new Repositor()));
+
+        String id7 = GeradorId.gerarId();
+        Repositor cargo7 = new Repositor();
+      
+        objOutStream.writeObject(cargo7);
+        byte[] objSerializado7 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id7, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo7));
+        
+        statement.setString(1, id7);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado7);
+
+        statement.executeUpdate();
+        
         break;
     
       case 8:
-        listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, new Seguranca()));
+
+        String id8 = GeradorId.gerarId();
+        Seguranca cargo8 = new Seguranca();
+      
+        objOutStream.writeObject(cargo8);
+        byte[] objSerializado8 = byteOutStream.toByteArray();
+
+        listaFuncionarios.add(new Funcionario(id8, cpfLong, nome, sexoChar, cidade, bairro, rua, numeroInt, telefoneString, nascimento, cargo8));
+        
+        statement.setString(1, id8);
+        statement.setLong(2, cpfLong);
+        statement.setString(3, nome);
+        statement.setString(4, Character.toString(sexoChar));
+        statement.setString(5, cidade);
+        statement.setString(6, bairro);
+        statement.setString(7, rua);
+        statement.setInt(8, numeroInt);
+        statement.setString(9, telefoneString);
+        statement.setString(10, nascimento);
+        statement.setBytes(11, objSerializado8);
+
+        statement.executeUpdate();
+        
         break;
-  
     }
+
     System.out.println("[NOVO FUNCIONARIO CADASTRADO COM SUCESSO!]");
+    
+    //DESERIALIZAÇÃO + APRESENTAR OS DADOS
+    Statement xx = connection.createStatement();
+    ResultSet rs = xx.executeQuery("select * from funcionario");
+    
+    while(rs.next()){
+      byte[] obj = rs.getBytes("cargo");
+      
+      ByteArrayInputStream bis = new ByteArrayInputStream(obj);
+      ObjectInputStream ois = new ObjectInputStream(bis);
+      Cargo cargo = (Cargo) ois.readObject();
+      
+      System.out.println(cargo.getNome());
+      
+    }
+    
+    statement.close();
+    connection.close();
+    objOutStream.close();
+    byteOutStream.close();
   }
 
 
@@ -317,9 +528,33 @@ public class SistemaADM {
   }
 
   //LISTAR FUNCIONARIOS
-  public static void listarTodosFuncionarios(){
+  public static void listarTodosFuncionarios() throws SQLException{
+    
+    //VALOR VINDO DA LIST DE FUNCIONARIOS
+    /* 
     for (Funcionario funcionario : listaFuncionarios) {
       System.out.println(funcionario);
+    }
+    */
+    
+    //CONEXAO COM O BANCO, STATEMENT E EXIBICAO DOS DADOS DIRETO DO BANCO 
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    Statement statement = connection.createStatement();
+    ResultSet rs = statement.executeQuery("select * from funcionario");
+    
+    while(rs.next()){
+      String id = rs.getString(1);
+      long cpf = rs.getLong(2);
+      String nome = rs.getString(3);
+      String sexo = rs.getString(4);
+      String cidade = rs.getString(5);
+      String bairro = rs.getString(6);
+      String rua = rs.getString(7);
+      int numeroRua = rs.getInt(8);
+      String telefone = rs.getString(9);
+      String nascimento = rs.getString(10);
+    
+      System.out.printf("[ID: %s, CPF: %d, NOME: %s, SEXO: %s, CIDADE: %s, BAIRRO: %s, RUA: %s, NUMERO: %d, TELEFONE: %s, NASCIMENTO: %s]\n\n",id,cpf,nome,sexo,cidade,bairro,rua,numeroRua,telefone,nascimento);
     }
   }
 
