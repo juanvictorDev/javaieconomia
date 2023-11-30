@@ -3,11 +3,7 @@ package funcionario;
 import java.util.*;
 import funcionario.cargos.*;
 import geradorId.GeradorId;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.sql.*;
 
 public class SistemaADM {
@@ -340,7 +336,7 @@ public class SistemaADM {
       
     }
     */
-    
+
     statement.close();
     connection.close();
     objOutStream.close();
@@ -348,8 +344,9 @@ public class SistemaADM {
   }
 
 
+
   //ATUALIZAR FUNCIONARIO
-  public static void atualiazarFuncionario(){
+  public static void atualiazarFuncionario() throws SQLException, IOException, ClassNotFoundException{
     System.out.println("[DIGITE O CPF(11 digitos) DO FUNCIONARIO]");
     String cpfString = System.console().readLine();
     long cpfLong;
@@ -373,34 +370,66 @@ public class SistemaADM {
       return;
     }  
 
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    Statement statement = connection.createStatement();
+    ResultSet rs = statement.executeQuery("select * from funcionario where cpf = '" + cpfLong + "'");
+
+    //EXIBINDO DADOS DIRETO DO BANCO 
     System.out.println("+--------------------------+");
     System.out.println("|  ATRIBUTOS E VALORES     |");
     System.out.println("+--------------------------+");
-    System.out.println(" 1. CPF: " + fAchado.getCpf());
-    System.out.println(" 2. Nome: " + fAchado.getNome());
-    System.out.println(" 3. Sexo: " + fAchado.getSexo());
-    System.out.println(" 4. Cidade: " + fAchado.getCidade());
-    System.out.println(" 5. Bairro: " + fAchado.getBairro());
-    System.out.println(" 6. Rua: " + fAchado.getRua());
-    System.out.println(" 7. Numero da Residência: " + fAchado.getNumeroRua());
-    System.out.println(" 8. Telefone: " + fAchado.getTelefone());
-    System.out.println(" 9. Data de Nascimento: " + fAchado.getNascimento());
-    System.out.println(" 10. Cargo: " + fAchado.getCargo().getNome());
+    System.out.println(" 1. CPF: " + rs.getLong(2));
+    System.out.println(" 2. Nome: " + rs.getString(3));
+    System.out.println(" 3. Sexo: " + rs.getString(4));
+    System.out.println(" 4. Cidade: " + rs.getString(5));
+    System.out.println(" 5. Bairro: " + rs.getString(6));
+    System.out.println(" 6. Rua: " + rs.getString(7));
+    System.out.println(" 7. Numero da Residência: " + rs.getInt(8));
+    System.out.println(" 8. Telefone: " + rs.getString(9));
+    System.out.println(" 9. Data de Nascimento: " + rs.getString(10));
+  
+    //DESSERIALIZACAO DO TIPO BLOB DO BANCO QUE ARMAZENHA O OBJETO CARGO
+    ByteArrayInputStream byteArray = new ByteArrayInputStream(rs.getBytes(11));
+    ObjectInputStream objInput = new ObjectInputStream(byteArray);
+    Cargo cargo = (Cargo) objInput.readObject();
+
+    System.out.println(" 10. Cargo: " + cargo.getNome());
     
+    byteArray.close();
+    objInput.close();
+    statement.close();
+
+
     System.out.println("[ESCOLHA O ATRIBUTO QUE DESEJA MUDAR]");
     String opcao = System.console().readLine();
     
+    //CRIANDO UM NOVO STATEMENT PARA ATUALIZAR OS DADOS
+  
     switch (opcao) {
       case "1":
-        System.out.println("[Digite o novo CPF(11 digitos)]");
-        String novoCpf = System.console().readLine();
-        fAchado.setCpf(Long.parseLong(novoCpf));
-          break;
+      System.out.println("[Digite o novo CPF(11 digitos)]");
+      String novoCpf = System.console().readLine();
+      fAchado.setCpf(Long.parseLong(novoCpf));
+      
+      PreparedStatement preparedStatement = connection.prepareStatement("update funcionario set cpf = ? where cpf = ?");
+      preparedStatement.setLong(1, Long.parseLong(novoCpf));
+      preparedStatement.setLong(2, cpfLong);
+      preparedStatement.executeUpdate();
+      preparedStatement.close();
+      
+        break;
 
       case "2":
         System.out.println("[DIGITE O NOVO NOME]");
         String novoNome = System.console().readLine();
         fAchado.setNome(novoNome);
+
+        PreparedStatement preparedStatement2 = connection.prepareStatement("update funcionario set nome = ? where cpf = ?");
+        preparedStatement2.setString(1, novoNome);
+        preparedStatement2.setLong(2, cpfLong);
+        preparedStatement2.executeUpdate();
+        preparedStatement2.close();
+             
           break;
 
       case "3":
@@ -408,6 +437,13 @@ public class SistemaADM {
         String novoSexo = System.console().readLine();
         if (novoSexo.equalsIgnoreCase("m") || novoSexo.equalsIgnoreCase("f")) {
           fAchado.setSexo(novoSexo.charAt(0));
+
+          PreparedStatement preparedStatement3 = connection.prepareStatement("update funcionario set sexo = ? where cpf = ?");
+          preparedStatement3.setString(1, novoSexo);
+          preparedStatement3.setLong(2, cpfLong);
+          preparedStatement3.executeUpdate();
+          preparedStatement3.close();
+
         } else {
           System.out.println("[ERRO] Sexo inválido.");
         }
@@ -417,30 +453,65 @@ public class SistemaADM {
         System.out.println("[DIGITE A NOVA CIDADE]");
         String novaCidade = System.console().readLine();
         fAchado.setCidade(novaCidade);
+
+        PreparedStatement preparedStatement4 = connection.prepareStatement("update funcionario set cidade = ? where cpf = ?");
+        preparedStatement4.setString(1, novaCidade);
+        preparedStatement4.setLong(2, cpfLong);
+        preparedStatement4.executeUpdate();
+        preparedStatement4.close();
+
           break;
       
       case "5":
         System.out.println("[DIGITE O NOVO BAIRRO]");
         String novoBairro = System.console().readLine();
         fAchado.setBairro(novoBairro);
+
+        PreparedStatement preparedStatement5 = connection.prepareStatement("update funcionario set bairro = ? where cpf = ?");
+        preparedStatement5.setString(1, novoBairro);
+        preparedStatement5.setLong(2, cpfLong);
+        preparedStatement5.executeUpdate();
+        preparedStatement5.close();
+
           break;
 
         case "6":
           System.out.println("[DIGITE A NOVA RUA]");
           String novaRua = System.console().readLine();
           fAchado.setRua(novaRua);
+
+          PreparedStatement preparedStatement6 = connection.prepareStatement("update funcionario set rua = ? where cpf = ?");
+          preparedStatement6.setString(1, novaRua);
+          preparedStatement6.setLong(2, cpfLong);
+          preparedStatement6.executeUpdate();
+          preparedStatement6.close();
+
             break;
        
         case "7":
           System.out.println("[DIGITE O NOVO NUMERO DE RESIDENCIA]");
           int novoNumero = Integer.parseInt(System.console().readLine());
           fAchado.setNumeroRua(novoNumero);
+            
+          PreparedStatement preparedStatement7 = connection.prepareStatement("update funcionario set numero_rua = ? where cpf = ?");
+          preparedStatement7.setInt(1, novoNumero);
+          preparedStatement7.setLong(2, cpfLong);
+          preparedStatement7.executeUpdate();
+          preparedStatement7.close();
+          
             break;
         
         case "8":
           System.out.println("[DIGITE O NOVO TELEFONE(8 digitos)]");
           String novoTelefone = System.console().readLine();
           fAchado.setTelefone(novoTelefone);
+
+          PreparedStatement preparedStatement8 = connection.prepareStatement("update funcionario set telefone = ? where cpf = ?");
+          preparedStatement8.setString(1, novoTelefone);
+          preparedStatement8.setLong(2, cpfLong);
+          preparedStatement8.executeUpdate();
+          preparedStatement8.close();
+
             break;
       
         case "9":
@@ -448,6 +519,13 @@ public class SistemaADM {
           String novaDataNascimento = System.console().readLine();
           if (novaDataNascimento.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
             fAchado.setNascimento(novaDataNascimento);
+
+          PreparedStatement preparedStatement9 = connection.prepareStatement("update funcionario set nascimento = ? where cpf = ?");
+          preparedStatement9.setString(1, novaDataNascimento);
+          preparedStatement9.setLong(2, cpfLong);
+          preparedStatement9.executeUpdate();
+          preparedStatement9.close();
+
           } else {
             System.out.println("[ERRO] Formato de data inválido.");
           }
@@ -487,47 +565,134 @@ public class SistemaADM {
             return;
           }
 
+          PreparedStatement preparedStatement10 = connection.prepareStatement("update funcionario set cargo = ? where cpf = ?");
+          ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+          ObjectOutputStream objOutStream = new ObjectOutputStream(byteOutStream);
+
           switch (cargoEscolhidoInt) {
             case 1:
-              fAchado.setCargo(new Acougueiro());
+              Acougueiro novoCargo = new Acougueiro();
+              fAchado.setCargo(novoCargo);
+
+              objOutStream.writeObject(novoCargo);
+              byte[] objByte = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
               break;
           
             case 2:
-              fAchado.setCargo(new AuxiliarGeral());
+              AuxiliarGeral novoCargo2 = new AuxiliarGeral();
+
+              fAchado.setCargo(novoCargo2);
+
+              objOutStream.writeObject(novoCargo2);
+              byte[] objByte2 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte2);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
           
             case 3:
-              fAchado.setCargo(new AuxiliarLimpeza());
+              AuxiliarLimpeza novoCargo3 = new AuxiliarLimpeza();
+
+              fAchado.setCargo(novoCargo3);
+
+              objOutStream.writeObject(novoCargo3);
+              byte[] objByte3 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte3);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
           
             case 4:
-              fAchado.setCargo(new Estoquista());
+              Estoquista novoCargo4 = new Estoquista();
+
+              fAchado.setCargo(novoCargo4);
+
+              objOutStream.writeObject(novoCargo4);
+              byte[] objByte4 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte4);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
           
             case 5:
               System.out.println("[DIGITE A SENHA PARA O GERENTE ACESSAR O SISTEMA]");
               String senhaGerente = System.console().readLine();
-              fAchado.setCargo(new Gerente(senhaGerente));
+
+              Gerente novoCargo5 = new Gerente(senhaGerente);
+
+              fAchado.setCargo(novoCargo5);
+
+              objOutStream.writeObject(novoCargo5);
+              byte[] objByte5 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte5);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
 
             case 6:
               System.out.println("[DIGITE A SENHA PARA O OPERADOR DE CAIXA]");
-              String senhaCaixa = System.console().readLine();      
-              fAchado.setCargo(new OperadorCaixa(senhaCaixa));
+              String senhaCaixa = System.console().readLine();
+              
+              OperadorCaixa novoCargo6 = new OperadorCaixa(senhaCaixa);
+
+              fAchado.setCargo(novoCargo6);
+
+              objOutStream.writeObject(novoCargo6);
+              byte[] objByte6 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte6);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
           
             case 7:
-              fAchado.setCargo(new Repositor());
+              Repositor novoCargo7 = new Repositor();
+
+              fAchado.setCargo(novoCargo7);
+
+              objOutStream.writeObject(novoCargo7);
+              byte[] objByte7 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte7);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
           
             case 8:
-              fAchado.setCargo(new Seguranca());
+              Seguranca novoCargo8 = new Seguranca();
+
+              fAchado.setCargo(novoCargo8);
+
+              objOutStream.writeObject(novoCargo8);
+              byte[] objByte8 = byteOutStream.toByteArray();
+
+              preparedStatement10.setBytes(1, objByte8);
+              preparedStatement10.setLong(2, cpfLong);
+              preparedStatement10.executeUpdate();
+
               break;
-        }
-          break;
+          }
+          preparedStatement10.close();
+
+        break;
     }
     System.out.println("[FUNCIONÁRIO ATUALIZADO COM SUCESSO!]");
   }
+
 
   //LISTAR FUNCIONARIOS
   public static void listarTodosFuncionarios() throws SQLException{
