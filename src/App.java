@@ -2,6 +2,9 @@ import cliente.*;
 import funcionario.*;
 import produto.*;
 
+//arrumar a validação do funcionarios pq quando cadastra e reinicia o java exclui e a do banco n
+//ent quando reinicia se perde os que foram cadastrados mas no banco permanece
+
 public class App {
   public static void main(String[] args) throws Exception {
     Estoque.iniciarEstoque();

@@ -4,6 +4,7 @@ import produto.produtos.*;
 import java.util.*;
 import java.util.regex.Pattern;
 import geradorId.*;
+import java.sql.*;
 
 public class Estoque {
   
@@ -27,14 +28,37 @@ public class Estoque {
   
 
   //VIZUALIZAR ESTOQUE GERAL
-  static public void visualizarGeral(){
+  static public void visualizarGeral() throws SQLException{
+    
+    //VIZUALIZANDO PELA COLLECTION
+    /* 
     Collections.sort(estoqueGeral);
     for (Produto produto : estoqueGeral) {
       System.out.println(produto);
     }
+    */
+
+    //VISUALIZANDO DO ESTOQUE DO BANCO
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    Statement statement = connection.createStatement();
+    ResultSet rs = statement.executeQuery("select * from produto");
+
+    while (rs.next()) {
+      String id = rs.getString(1);
+      String nome = rs.getString(2);
+      String tipo = rs.getString(3);
+      Double preco = rs.getDouble(4);
+      String medida = rs.getString(5);
+      String setor = rs.getString(6);
+    
+      System.out.printf("[ID: %s, NOME: %s, TIPO: %s, PRECO: %.2f, MEDIDA: %s, SETOR: %s]\n\n",id,nome,tipo,preco,medida,setor);
+    }
+
+    statement.close();
+    connection.close();
   }
   
-  //VISUALIZAR QUANTIDA DE PRODUTOS NO ESTOQUE POR TIPO DE PRODUTO
+  //VISUALIZAR QUANTIDADE DE PRODUTOS NO ESTOQUE POR TIPO DE PRODUTO
   public static void quantidadeGeralPorProduto(){
     System.out.println("[QUANTIDADE TOTAL POR TIPO DE PRODUTO]");
     System.out.println("Bebidas = " + bebidaQnt);
@@ -249,7 +273,7 @@ public class Estoque {
   }
 
   //ADICIONAR PRODUTO
-  static public void addProduto(){
+  static public void addProduto() throws SQLException{
     System.out.println("+-------------------------------------------------------------------+");
     System.out.println("|                        ESCOLHA A CLASSE                           |");
     System.out.println("+-------------------------------------------------------------------+");
@@ -278,6 +302,10 @@ public class Estoque {
       System.out.println("[ERRO] Classe nao existe.");
       return;
     }
+
+    //CONEXAO COM O BANCO E STATEMENT
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("insert into produto values (?,?,?,?,?,?)");
 
     if(valorInt == 8 || valorInt == 11 || valorInt == 12){
       System.out.println("Digite o NOME do produto:");
@@ -345,7 +373,17 @@ public class Estoque {
           int count8 = 1;
           
           while(count8 <= quantidadeInt8){
-            estoqueGeral.add(new Limpeza(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Limpeza(id, nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, medidaProduto);
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+
             count8++;
           }
           break;
@@ -356,7 +394,17 @@ public class Estoque {
           int count11 = 1;
           
           while(count11 <= quantidadeInt11){
-            estoqueGeral.add(new HigienePessoal(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new HigienePessoal(id, nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, medidaProduto);
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count11++;
           }
           break;
@@ -367,7 +415,17 @@ public class Estoque {
           int count12 = 1;
           
           while(count12 <= quantidadeInt12){
-            estoqueGeral.add(new Laticinio(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Laticinio(id, nomeProduto, tipoProduto, precoProdutoDouble, medidaProduto, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, medidaProduto);
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+
             count12++;
           }
           break;
@@ -443,7 +501,17 @@ public class Estoque {
           int count1 = 1;
           
           while(count1 <= quantidadeInt1){
-            estoqueGeral.add(new Bebida(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Bebida(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+
             count1++;
           }
           break;
@@ -454,7 +522,17 @@ public class Estoque {
           int count2 = 1;
           
           while(count2 <= quantidadeInt2){
-            estoqueGeral.add(new Carne(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Carne(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+
             count2++;
           }
           break;
@@ -465,7 +543,17 @@ public class Estoque {
           int count3 = 1;
           
           while(count3 <= quantidadeInt3){
-            estoqueGeral.add(new Cereal(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Cereal(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count3++;
           }
           break;
@@ -476,7 +564,17 @@ public class Estoque {
           int count4 = 1;
           
           while(count4 <= quantidadeInt4){
-            estoqueGeral.add(new Condimento(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Condimento(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count4++;
           }
           break;
@@ -487,7 +585,17 @@ public class Estoque {
           int count5 = 1;
           
           while(count5 <= quantidadeInt5){
-            estoqueGeral.add(new Doce(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Doce(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count5++;
           }
           break;
@@ -498,7 +606,17 @@ public class Estoque {
           int count6 = 1;
           
           while(count6 <= quantidadeInt6){
-            estoqueGeral.add(new Enlatado(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Enlatado(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count6++;
           }
           break;
@@ -509,7 +627,17 @@ public class Estoque {
           int count7 = 1;
           
           while(count7 <= quantidadeInt7){
-            estoqueGeral.add(new Fruta(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Fruta(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count7++;
           }
           break;
@@ -520,7 +648,17 @@ public class Estoque {
           int count9 = 1;
           
           while(count9 <= quantidadeInt9){
-            estoqueGeral.add(new Massa(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Massa(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count9++;
           }
           break;
@@ -531,7 +669,17 @@ public class Estoque {
           int count10 = 1;
           
           while(count10 <= quantidadeInt10){
-            estoqueGeral.add(new Legume(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Legume(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+
             count10++;
           }
           break;
@@ -542,7 +690,17 @@ public class Estoque {
           int count13 = 1;
           
           while(count13 <= quantidadeInt13){
-            estoqueGeral.add(new Vegetal(GeradorId.gerarId(), nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            String id = GeradorId.gerarId();
+            estoqueGeral.add(new Vegetal(id, nomeProduto, tipoProduto, precoProdutoDouble, pesoProdutoFloat, valores.get(setorInt)));
+            
+            preparedStatement.setString(1, id);
+            preparedStatement.setString(2, nomeProduto);
+            preparedStatement.setString(3, tipoProduto);
+            preparedStatement.setDouble(4, precoProdutoDouble);
+            preparedStatement.setString(5, Float.toString(pesoProdutoFloat));
+            preparedStatement.setString(6, valores.get(setorInt).value);
+            preparedStatement.executeUpdate();
+            
             count13++;
           }
           break;         
@@ -551,6 +709,9 @@ public class Estoque {
       System.out.println("-Digite o nome do produto para verificar ele no estoque-");
       visualizarPorNome();
     }
+
+    preparedStatement.close();
+    connection.close();
   }
 
   //EXCLUIR PRODUTO
