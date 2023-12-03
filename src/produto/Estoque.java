@@ -78,7 +78,7 @@ public class Estoque {
   
 
   //VISUALIZAR ESTOQUE POR SETOR
-  static public void visualizarPorSetor(){
+  static public void visualizarPorSetor() throws SQLException{
     
     Map<Integer, Setor> valores = new HashMap<>();
     valores.put(1, Setor.PERECIVEIS);
@@ -127,36 +127,99 @@ public class Estoque {
  
     int valorFinal = valorEscolhidoInt;
 
+    /* 
     List<Produto> listaDaSecao = estoqueGeral.stream()
       .filter((e) -> e.getLocal() == valores.get(valorFinal))
       .toList();
-
+  
     for (Produto produto : listaDaSecao) {
       System.out.println(produto + " SETOR = " + produto.getLocal().value);
+    }
+    */ 
+
+    //CONEXAO COM O BANCO, STATEMENT E EXIBICAO DOS DADOS DIRETO DO BANCO 
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where setor = ?");
+    preparedStatement.setString(1, valores.get(valorFinal).value);
+    ResultSet rs = preparedStatement.executeQuery();
+
+    if(rs.next() == false){
+      System.out.println("[SETOR VAZIO]");
+      
+      return;
+
+    }else{
+      
+      do {
+        String id = rs.getString(1);
+        String nome = rs.getString(2);
+        String tipo = rs.getString(3);
+        Double preco = rs.getDouble(4);
+        String medida = rs.getString(5);
+        String setor = rs.getString(6);
+      
+        System.out.printf("[ID: %s, NOME: %s, TIPO: %s, PRECO: %.2f, MEDIDA: %s, SETOR: %s]\n\n",id,nome,tipo,preco,medida,setor);
+      
+      } while (rs.next());
+    
+      preparedStatement.close();
+      connection.close();
     }
   }
 
 
 
   //VISUALIZAR ESTOQUE POR NOME
-  static public void visualizarPorNome(){
+  static public void visualizarPorNome() throws SQLException{
     System.out.println("[DIGITE O NOME DO PRODUTO PARA VISUALIZAR O ESTOQUE]");
-    String nome = System.console().readLine();
+    String nomeDigitado = System.console().readLine();
 
-    if(Pattern.matches(".*\\d.*", nome)){
+    if(Pattern.matches(".*\\d.*", nomeDigitado)){
       System.out.println("[ERRO] Nome invalido");
       return;
     }
 
     List<Produto> produtosAchados = estoqueGeral.stream()
-        .filter((e)->e.getNome().equalsIgnoreCase(nome))
+        .filter((e)->e.getNome().equalsIgnoreCase(nomeDigitado))
         .toList();
     if(produtosAchados.isEmpty()){
       System.out.println("[ERRO] Produto nao encontrado.");
     }else{
+      /* 
       for (Produto produto : produtosAchados) {
         System.out.println(produto);
       }
+      */
+
+      //CONEXAO COM O BANCO
+      Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+      PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where nome = ?");
+      preparedStatement.setString(1, nomeDigitado);
+      ResultSet rs = preparedStatement.executeQuery();
+
+      if(rs.next() == false){
+        System.out.println("[PRODUTO NAO EXISTE]");
+        
+        return;
+
+      }else{
+        
+        do {
+          String id = rs.getString(1);
+          String nome = rs.getString(2);
+          String tipo = rs.getString(3);
+          Double preco = rs.getDouble(4);
+          String medida = rs.getString(5);
+          String setor = rs.getString(6);
+        
+          System.out.printf("[ID: %s, NOME: %s, TIPO: %s, PRECO: %.2f, MEDIDA: %s, SETOR: %s]\n\n",id,nome,tipo,preco,medida,setor);
+        
+        } while (rs.next());
+      
+        preparedStatement.close();
+        connection.close();
+      }
+
     }
   }
 
