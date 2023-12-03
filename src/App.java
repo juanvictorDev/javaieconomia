@@ -148,7 +148,7 @@ public class App {
                   SistemaADM.addFuncionario();
                   break;
                 case 2:
-                  SistemaADM.atualiazarFuncionario();
+                  SistemaADM.atualizarFuncionario();
                   break;
                 case 3:
                   SistemaADM.listarTodosFuncionarios();
