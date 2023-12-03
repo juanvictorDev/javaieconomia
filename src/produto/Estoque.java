@@ -179,22 +179,77 @@ public class Estoque {
       return;
     }
 
+    /* 
     List<Produto> produtosAchados = estoqueGeral.stream()
-        .filter((e)->e.getNome().equalsIgnoreCase(nomeDigitado))
-        .toList();
+    .filter((e)->e.getNome().equalsIgnoreCase(nomeDigitado))
+    .toList();
     if(produtosAchados.isEmpty()){
       System.out.println("[ERRO] Produto nao encontrado.");
     }else{
-      /* 
       for (Produto produto : produtosAchados) {
         System.out.println(produto);
       }
-      */
+    }
+    */
+
+    //CONEXAO COM O BANCO
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where nome = ?");
+    preparedStatement.setString(1, nomeDigitado);
+    ResultSet rs = preparedStatement.executeQuery();
+
+    if(rs.next() == false){
+      System.out.println("[PRODUTO NAO EXISTE]");
+      
+      return;
+
+    }else{
+      
+      do {
+        String id = rs.getString(1);
+        String nome = rs.getString(2);
+        String tipo = rs.getString(3);
+        Double preco = rs.getDouble(4);
+        String medida = rs.getString(5);
+        String setor = rs.getString(6);
+      
+        System.out.printf("[ID: %s, NOME: %s, TIPO: %s, PRECO: %.2f, MEDIDA: %s, SETOR: %s]\n\n",id,nome,tipo,preco,medida,setor);
+      
+      } while (rs.next());
+    
+      preparedStatement.close();
+      connection.close();
+    }
+  }
+
+
+
+  //ALTERAR PRECO
+  static public void alterarPreco() throws SQLException{
+    System.out.println("[PARA ALTERAR O PRECO, DIGITE O NOME DO PRODUTO]");
+    String nomeProduto = System.console().readLine();
+  
+    if(Pattern.matches(".*\\d.*", nomeProduto)){
+      System.out.println("[ERRO] Nome invalido");
+      return;
+    }
+
+    /* 
+    List<Produto> produtosAchados = estoqueGeral.stream().filter((e)->e.getNome().equalsIgnoreCase(nomeProduto)).toList();
+    if(produtosAchados.isEmpty()){
+      System.out.println("[ERRO] Produto nao encontrado.");
+      return;
+    }else{
+      for (Produto produto : produtosAchados) {
+        System.out.println(produto);
+      }
+    }
+    */
 
       //CONEXAO COM O BANCO
       Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
       PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where nome = ?");
-      preparedStatement.setString(1, nomeDigitado);
+      preparedStatement.setString(1, nomeProduto);
       ResultSet rs = preparedStatement.executeQuery();
 
       if(rs.next() == false){
@@ -217,49 +272,33 @@ public class Estoque {
         } while (rs.next());
       
         preparedStatement.close();
-        connection.close();
       }
-
-    }
-  }
-
-
-
-  //ALTERAR PRECO
-  static public void alterarPreco(){
-    System.out.println("[PARA ALTERAR O PRECO, DIGITE O NOME DO PRODUTO]");
-    String nomeProduto = System.console().readLine();
-  
-    if(Pattern.matches(".*\\d.*", nomeProduto)){
-      System.out.println("[ERRO] Nome invalido");
-      return;
-    }
-
-    List<Produto> produtosAchados = estoqueGeral.stream().filter((e)->e.getNome().equalsIgnoreCase(nomeProduto)).toList();
-    if(produtosAchados.isEmpty()){
-      System.out.println("[ERRO] Produto nao encontrado.");
-      return;
-    }else{
-      for (Produto produto : produtosAchados) {
-        System.out.println(produto);
-      }
-    }
-
-    System.out.println("[DIGITE O NOVO VALOR]");
-    String novoValorString = System.console().readLine();
-    double novoValorDouble = Double.parseDouble(novoValorString);
-
-    for (Produto produto : estoqueGeral) {
-      if(produto.getNome().equalsIgnoreCase(nomeProduto)){
+      
+      System.out.println("[DIGITE O NOVO VALOR]");
+      String novoValorString = System.console().readLine();
+      double novoValorDouble = Double.parseDouble(novoValorString);
+      
+    
+      for (Produto produto : estoqueGeral) {
+        if(produto.getNome().equalsIgnoreCase(nomeProduto)){
         produto.setPreco(novoValorDouble);
         System.out.println(produto);
       }
     }
+    
+
+    PreparedStatement preparedStatement2 = connection.prepareStatement("update produto set preco = ? where nome = ?");
+    preparedStatement2.setDouble(1, novoValorDouble);
+    preparedStatement2.setString(2, nomeProduto);
+    preparedStatement2.executeUpdate();
+
+    preparedStatement2.close();
+    connection.close();
   }
-
-
+  
+  
   // ALTERAR SETOR POR NOME
-  static public void alterarSetor(){
+  static public void alterarSetor() throws SQLException{
     System.out.println("[PARA ALTERAR O SETOR, DIGITE O NOME DO PRODUTO]");
     String nomeProduto = System.console().readLine();
   
@@ -268,9 +307,10 @@ public class Estoque {
       return;
     }
 
+    /* 
     List<Produto> produtosAchados = estoqueGeral.stream()
-      .filter((e)->e.getNome().equalsIgnoreCase(nomeProduto))
-      .toList();
+    .filter((e)->e.getNome().equalsIgnoreCase(nomeProduto))
+    .toList();
     if(produtosAchados.isEmpty()){
       System.out.println("[ERRO] Produto nao encontrado.");
       return;
@@ -279,6 +319,37 @@ public class Estoque {
         System.out.println(produto + " SETOR = " + produto.getLocal().value);
       }
     }
+    */
+    
+
+    //CONEXAO COM O BANCO
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where nome = ?");
+    preparedStatement.setString(1, nomeProduto);
+    ResultSet rs = preparedStatement.executeQuery();
+
+    if(rs.next() == false){
+      System.out.println("[PRODUTO NAO EXISTE]");
+        
+      return;
+
+    }else{
+        
+      do {
+        String id = rs.getString(1);
+        String nome = rs.getString(2);
+        String tipo = rs.getString(3);
+        Double preco = rs.getDouble(4);
+        String medida = rs.getString(5);
+        String setor = rs.getString(6);
+        
+        System.out.printf("[ID: %s, NOME: %s, TIPO: %s, PRECO: %.2f, MEDIDA: %s, SETOR: %s]\n\n",id,nome,tipo,preco,medida,setor);
+        
+      } while (rs.next());
+      
+      preparedStatement.close();
+    }
+
 
     Map<Integer, Setor> valores = new HashMap<>();
     valores.put(1, Setor.PERECIVEIS);
@@ -333,6 +404,14 @@ public class Estoque {
       }
     }
 
+    //ALTERACAO DE SETOR DIRETO DO BANCO
+    PreparedStatement preparedStatement2 = connection.prepareStatement("update produto set setor = ? where nome = ?");
+    preparedStatement2.setString(1, valores.get(valorEscolhidoInt).value);
+    preparedStatement2.setString(2, nomeProduto);
+    preparedStatement2.executeUpdate();
+
+    preparedStatement2.close();
+    connection.close();
   }
 
   //ADICIONAR PRODUTO

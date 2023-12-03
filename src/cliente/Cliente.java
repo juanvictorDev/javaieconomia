@@ -2,13 +2,15 @@ package cliente;
 
 import java.util.*;
 import produto.*;
+
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 
 public class Cliente {
   static ArrayList<Produto> carrinho = new ArrayList<>();
   
   //VISUALIZAR PRODUTOS NO SETOR
-  public static void visitarSetor(){
+  public static void visitarSetor() throws SQLException{
     Estoque.visualizarPorSetor();
   }
 
