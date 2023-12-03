@@ -108,12 +108,13 @@ public class Cliente {
 
 
   //COMPRAR
-  public static void comprar(){
+  public static void comprar() throws SQLException{
     if(carrinho.isEmpty()){
       System.out.println("nao e possivel comprar com o carrinho vazio");
       return;
     }
     
+    //DELETANDO DO ESTOQUE DO JAVA
     for (int i = 0; i <= carrinho.size() - 1; i++) {
       for (int j = 0; j <= Estoque.estoqueGeral.size() - 1; j++) {
         if(Estoque.estoqueGeral.get(j).getId().equals(carrinho.get(i).getId())){
@@ -122,7 +123,19 @@ public class Cliente {
       }
     }
 
-    System.out.println("COMPRA REALIZADA COM SUCESSO, OBRIGADO PELA PREFERENCIA!");
+    //DELETANDO DO ESTOQUE DO BANCO
+    Connection con = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = con.prepareStatement("delete from produto where id = ?");
+
+    for (ProdutoCarrinho produtoCarrinho : carrinho) {
+      preparedStatement.setString(1, produtoCarrinho.getId());
+      preparedStatement.executeUpdate();
+    }
+
     carrinho.clear();
+    preparedStatement.close();
+    con.close();
+    
+    System.out.println("COMPRA REALIZADA COM SUCESSO, OBRIGADO PELA PREFERENCIA!");
   }
 }
