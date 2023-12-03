@@ -2,12 +2,11 @@ package cliente;
 
 import java.util.*;
 import produto.*;
-
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DecimalFormat;
 
 public class Cliente {
-  static ArrayList<Produto> carrinho = new ArrayList<>();
+  static ArrayList<ProdutoCarrinho> carrinho = new ArrayList<>();
   
   //VISUALIZAR PRODUTOS NO SETOR
   public static void visitarSetor() throws SQLException{
@@ -15,7 +14,7 @@ public class Cliente {
   }
 
   //ADICIONAR NO CARRINHO
-  public static void adicionarNoCarrinho(){
+  public static void adicionarNoCarrinho() throws SQLException{
     String produtoEscolhido = "";
     String tipoEscolhido = "";
     
@@ -30,50 +29,75 @@ public class Cliente {
     }
 
     int count = 0;
-    for (Produto produto : Estoque.estoqueGeral) {
-      if(produto.getNome().equalsIgnoreCase(produtoEscolhido) && produto.getTipo().equalsIgnoreCase(tipoEscolhido)){
-        count++;
-      }
-    }
     
+    /* 
+     for (Produto produto : Estoque.estoqueGeral) {
+       if(produto.getNome().equalsIgnoreCase(produtoEscolhido) && produto.getTipo().equalsIgnoreCase(tipoEscolhido)){
+         count++;
+        }
+      }
+    */
+    List<ProdutoCarrinho> achados = new ArrayList<>();
+
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("select * from produto where nome = ? and tipo = ?", ResultSet.TYPE_SCROLL_INSENSITIVE);
+    preparedStatement.setString(1, produtoEscolhido);
+    preparedStatement.setString(2, tipoEscolhido);
+    ResultSet rs = preparedStatement.executeQuery();
+    
+    while (rs.next()) {
+      achados.add(new ProdutoCarrinho(rs.getString("id"), rs.getString("nome"), rs.getString("tipo"), rs.getDouble("preco"), rs.getString("medida"), rs.getString("setor")));
+      ++count;
+    }
+
     if(count == 0){
-      System.out.println("produto nao existe");
+      System.out.println("[ERRO] PRODUTO NAO EXISTE \n");
       return;
     }
 
     System.out.println("digite a quantidade desejada");
     String quantidade = System.console().readLine();
     int quantidadeDesejada = Integer.parseInt(quantidade);
-
-    if(quantidadeDesejada > count || quantidadeDesejada == 0){
-      System.out.println("nao e possivel realizar operacao, quantidade escolhida invalida");
+    
+    if(quantidadeDesejada > count || quantidadeDesejada <= 0){
+      System.out.println("[ERRO] nao e possivel realizar operacao, quantidade escolhida invalida \n");
       return;
     }
+    
+    /* 
     String tipoEscolhidoF = tipoEscolhido;
     String produtoEscolhidoF = produtoEscolhido;
     List<Produto> escolhidos = Estoque.estoqueGeral.stream()
-        .filter((e)->e.getNome().equalsIgnoreCase(produtoEscolhidoF) && e.getTipo()
-        .equalsIgnoreCase(tipoEscolhidoF))
-        .limit(quantidadeDesejada)
-        .toList();
+    .filter((e)->e.getNome().equalsIgnoreCase(produtoEscolhidoF) && e.getTipo().equalsIgnoreCase(tipoEscolhidoF))
+    .limit(quantidadeDesejada)
+    .toList();
     carrinho.addAll(escolhidos);
+    */
 
-    System.out.println("produto adicionado com sucesso");
-    for (Produto produto : carrinho) {
-      System.out.println(produto);
+    int i = 0;
+    while(i < quantidadeDesejada){
+      carrinho.add(achados.get(i));
+      ++i;
     }
+
+    achados.clear();
+    preparedStatement.close();
+    connection.close();
+
+    System.out.println("PRODUTO ADICIONADO COM SUCESSO");
+    
   }
 
   //CHECKOUT
   public static void checkout(){
-
+    
     double total = 0;
     DecimalFormat df = new DecimalFormat("#.##");
 
     System.out.println("+---------------------------+");
     System.out.println("|         CARRINHO          |");
     System.out.println("+---------------------------+");
-    for (Produto produto : carrinho) {
+    for (ProdutoCarrinho produto : carrinho) {
       System.out.println("." + produto.getNome() + "   preco: " + produto.getPreco());
       total += produto.getPreco();
     }

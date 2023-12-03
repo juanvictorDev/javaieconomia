@@ -362,6 +362,8 @@ public class SistemaADM {
       return; 
     }
     
+    verificarStatement.close();
+
     //EXIBINDO DADOS DIRETO DO BANCO 
     Statement statement = connection.createStatement();
     ResultSet rs = statement.executeQuery("select * from funcionario where cpf = '" + cpfLong + "'");
