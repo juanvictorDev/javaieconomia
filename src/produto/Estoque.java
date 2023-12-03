@@ -857,7 +857,7 @@ public class Estoque {
   }
 
   //EXCLUIR PRODUTO
-  static public void excluirProdutoPeloNome(){
+  static public void excluirProdutoPeloNome() throws SQLException{
     System.out.println("[DIGITE O NOME DO PRODUTO QUE DESEJA EXCLUIR]");
     String nomeProduto = System.console().readLine();
     
@@ -868,6 +868,18 @@ public class Estoque {
         i--;
       } 
     }
+
+    //CONEXAO COM O BANCO PARA EXCLUIR DADOS
+    Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement preparedStatement = connection.prepareStatement("delete from produto where nome = ?");
+    preparedStatement.setString(1, nomeProduto);
+    int result = preparedStatement.executeUpdate();
+    
+    if(result == 0){
+      System.out.println("[PRODUTO NAO EXISTE]");
+      return;
+    }
+
     System.out.println("[PRODUTO EXCLUIDO COM SUCESSO]");
   }
 
