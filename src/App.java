@@ -1,6 +1,6 @@
 import cliente.*;
-import funcionario.*;
-import produto.*;
+import controller.Estoque;
+import controller.SistemaADM;
 
 //arrumar a validação do funcionarios pq quando cadastra e reinicia o java exclui e a do banco n
 //ent quando reinicia se perde os que foram cadastrados mas no banco permanece

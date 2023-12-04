@@ -1,7 +1,7 @@
 package produto.produtos;
 
 import produto.Setor;
-import produto.Estoque;
+import controller.Estoque;
 import produto.Produto;
 
 public class Massa implements Produto{

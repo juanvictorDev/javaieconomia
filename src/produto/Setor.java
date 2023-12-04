@@ -5,7 +5,7 @@ public enum Setor {
   BEBIDAS("Bebidas"), CONGELADOS("Congelados"), DOCES("Doces"), LIMPEZA_DOMESTICA("Limpeza Domestica"),
   ACOUGUE("Acougue"), REFRIGERADOS("Refrigerados"), HORTIFRUTI("Horti Fruti");
 
-  String value;
+  public String value;
   
   Setor(String value){
     this.value = value;

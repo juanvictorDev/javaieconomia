@@ -1,7 +1,8 @@
 package cliente;
 
 import java.util.*;
-import produto.*;
+
+import controller.Estoque;
 import java.sql.*;
 import java.text.DecimalFormat;
 
