@@ -36,8 +36,8 @@ public class Bebida implements Produto{
   public double getPreco() {
     return preco;
   }
-  public float getLitro() {
-    return litro;
+  public String getMedida() {
+    return Float.toHexString(litro);
   }
   public Setor getLocal() {
     return local;

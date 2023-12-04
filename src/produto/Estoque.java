@@ -885,7 +885,7 @@ public class Estoque {
 
  
   //ESTOQUE INICIAL
-  static public void iniciarEstoque(){
+  static public void iniciarEstoque() throws SQLException{
     for(int i = 1; i<= 10; i++){
       estoqueGeral.add(new Bebida(GeradorId.gerarId(), "coca-cola", "zero", 6.00, 1, Setor.REFRIGERADOS));
       estoqueGeral.add(new Bebida(GeradorId.gerarId(), "Sprite", "original", 7.50, 2, Setor.REFRIGERADOS));
@@ -952,5 +952,22 @@ public class Estoque {
     }
 
     Collections.sort(estoqueGeral);
+    /* 
+     Connection con = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+     PreparedStatement pst = con.prepareStatement("insert into produto values (?,?,?,?,?,?)");
+     
+      for (Produto produto : estoqueGeral) {
+        pst.setString(1, produto.getId());
+        pst.setString(2, produto.getNome());
+        pst.setString(3, produto.getTipo());
+        pst.setDouble(4, produto.getPreco());
+        pst.setString(5, produto.getMedida());
+        pst.setString(6, produto.getLocal().value);
+        pst.executeUpdate();
+      }
+      
+      pst.close();
+      con.close();
+    */
   }
 }

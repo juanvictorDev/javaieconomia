@@ -36,8 +36,8 @@ public class Legume implements Produto{
   public double getPreco() {
     return preco;
   }
-  public float getPeso() {
-    return peso;
+  public String getMedida() {
+    return Float.toString(peso);
   }
   public Setor getLocal() {
     return local;
