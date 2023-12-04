@@ -780,7 +780,8 @@ public class SistemaADM {
 
 
   //INICIAR FUNCIONARIOS
-  public static void iniciarFuncionarios(){
+  public static void iniciarFuncionarios() throws Exception{
+
     listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), 70970235588L, "Upper Chai", 'm', "recife", "varzea", "rodrigues paiva", 45, "40028922", "20/02/2000", new Gerente("main99")));
     listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), 40240565892L, "Alan Moore", 'm', "recife", "caxanga", "caxito", 12, "98566658", "21/08/1988", new OperadorCaixa("sub55")));
     listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), 56985235489L, "Nano Ledger", 'm', "recife", "mangueira", "braga neto", 124, "95666588", "11/01/1985", new OperadorCaixa("sub42")));
@@ -802,5 +803,38 @@ public class SistemaADM {
     listaFuncionarios.add(new Funcionario(GeradorId.gerarId(), 38217392173L, "Sam Sulek", 'm', "sao lourenco", "itaipu", "nova morada", 87, "54618118", "28/02/2002", new Acougueiro()));
   
     Collections.sort(listaFuncionarios);
-  } 
+
+    /*
+     ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+     ObjectOutputStream objOutStream = new ObjectOutputStream(byteOutStream);
+     
+     Connection connection = DriverManager.getConnection("jdbc:sqlite:database\\javaieconomia.db");
+    PreparedStatement statement = connection.prepareStatement("insert into funcionario values (?,?,?,?,?,?,?,?,?,?,?)");
+    
+    for (Funcionario funcionario : listaFuncionarios) {
+      
+      objOutStream.writeObject(funcionario.getCargo());
+      byte[] objSerializado = byteOutStream.toByteArray();
+          
+      statement.setString(1, funcionario.getId());
+      statement.setLong(2, funcionario.getCpf());
+      statement.setString(3, funcionario.getNome());
+      statement.setString(4, Character.toString(funcionario.getSexo()));
+      statement.setString(5, funcionario.getCidade());
+      statement.setString(6, funcionario.getBairro());
+      statement.setString(7, funcionario.getRua());
+      statement.setInt(8, funcionario.getNumeroRua());
+      statement.setString(9, funcionario.getTelefone());
+      statement.setString(10, funcionario.getNascimento());
+      statement.setBytes(11, objSerializado);
+      
+      statement.executeUpdate();
+    }
+
+    byteOutStream.close();
+    objOutStream.close();
+    statement.close();
+    connection.close();
+    */
+  }
 }
